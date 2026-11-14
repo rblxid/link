@@ -3,75 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roblox Indonesia - Link</title>
+<title>Link | Roblox Indonesia</title>
 </head>
 <body>
 
-<p id="status">Memuat profil Roblox...</p>
+<p>Mengalihkan ke Aplikasi Roblox atau Website Roblox...</p>
 
 <script>
-const username = new URLSearchParams(location.search)
-    .get("users");
+const params = new URLSearchParams(location.search);
+const userId = params.get("id");
 
-const status = document.getElementById("status");
+if (!userId || !/^\d+$/.test(userId)) {
+    document.body.innerHTML = "User ID Roblox tidak valid";
+} else {
 
-async function openProfile() {
-    if (!username) {
-        status.textContent = "Username tidak ditemukan di URL";
-        return;
-    }
+    const appLink =
+        "roblox://navigation/profile_card?userId=" +
+        userId;
 
-    try {
-        const response = await fetch(
-            "https://users.roblox.com/v1/users/search?keyword=" +
-            encodeURIComponent(username) +
-            "&limit=10"
-        );
-        console.log("HTTP:", response.status);
-        const result = await response.json();
-        console.log("DATA:", result);
-        
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
+    const webLink =
+        "https://www.roblox.com/id/users/" +
+        userId + "/profile";
 
-        const result = await response.json();
+    // Coba buka aplikasi Roblox
+    window.location.href = appLink;
 
-        const user = result.data?.find(
-            u => u.name.toLowerCase() === username.toLowerCase()
-        );
-
-        if (!user) {
-            status.textContent = "Username Roblox tidak ditemukan";
-            return;
-        }
-
-        const userId = user.id;
-
-        status.textContent = "Membuka profil " + user.name;
-
-        const fallback =
-            "https://www.roblox.com/id/users/" +
-            userId + "/profile";
-
-        const intent =
-            "intent://navigation/profile_card?userId=" +
-            userId +
-            "#Intent;scheme=roblox;" +
-            "package=com.roblox.client;" +
-            "S.browser_fallback_url=" +
-            encodeURIComponent(fallback) +
-            ";end";
-
-        location.href = intent;
-
-    } catch (error) {
-        status.textContent =
-            "Gagal memuat: " + error.message;
-    }
+    // Jika masih di halaman ini setelah 5 detik,
+    // alihkan ke Roblox Website
+    setTimeout(() => {
+        window.location.replace(webLink);
+    }, 5000);
 }
-
-openProfile();
 </script>
 
 </body>
