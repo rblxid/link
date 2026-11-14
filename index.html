@@ -27,7 +27,10 @@ async function openProfile() {
             encodeURIComponent(username) +
             "&limit=10"
         );
-
+        console.log("HTTP:", response.status);
+        const result = await response.json();
+        console.log("DATA:", result);
+        
         if (!response.ok) {
             throw new Error("HTTP " + response.status);
         }
