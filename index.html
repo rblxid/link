@@ -8,10 +8,16 @@
 </head>
 <body>
 <script>
-const username = new URLSearchParams(location.search)
-    .get("") || "RobloxIndonesia_old";
+const params = new URLSearchParams(window.location.search);
+const username = params.get("users");
 
-async function openProfile() {
+if (!username) {
+    document.body.innerHTML = "Username Roblox tidak ditemukan";
+} else {
+    openProfile(username);
+}
+
+async function openProfile(username) {
     try {
         const response = await fetch(
             "https://users.roblox.com/v1/usernames/users",
@@ -29,30 +35,25 @@ async function openProfile() {
 
         const data = await response.json();
 
-        if (!data.data || !data.data.length) {
-            document.body.innerHTML = "Username Roblox tidak ditemukan";
+        if (!data.data?.length) {
+            document.body.innerHTML = "Username tidak ditemukan";
             return;
         }
 
         const userId = data.data[0].id;
 
         const fallback =
-            "https://www.roblox.com/id/users/" +
-            userId + "/profile";
+            `https://www.roblox.com/id/users/${userId}/profile`;
 
         const intent =
-            "intent://navigation/profile_card?userId=" +
-            userId +
-            "#Intent;scheme=roblox;" +
-            "package=com.roblox.client;" +
-            "S.browser_fallback_url=" +
-            encodeURIComponent(fallback) +
-            ";end";
+            `intent://navigation/profile_card?userId=${userId}` +
+            `#Intent;scheme=roblox;package=com.roblox.client;` +
+            `S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
 
         location.href = intent;
 
     } catch (error) {
-        document.body.innerHTML = "Gagal membuka profil Roblox";
+        document.body.innerHTML = "Gagal memuat profil Roblox";
     }
 }
 
@@ -60,4 +61,3 @@ openProfile();
 </script>
 </body>
 </html>
-
