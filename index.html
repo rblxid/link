@@ -1,1 +1,63 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roblox Indonesia - Link</title>
+</head>
+<body>
+<script>
+const username = new URLSearchParams(location.search)
+    .get("") || "RobloxIndonesia_old";
+
+async function openProfile() {
+    try {
+        const response = await fetch(
+            "https://users.roblox.com/v1/usernames/users",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    usernames: [username],
+                    excludeBannedUsers: false
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.data || !data.data.length) {
+            document.body.innerHTML = "Username Roblox tidak ditemukan";
+            return;
+        }
+
+        const userId = data.data[0].id;
+
+        const fallback =
+            "https://www.roblox.com/id/users/" +
+            userId + "/profile";
+
+        const intent =
+            "intent://navigation/profile_card?userId=" +
+            userId +
+            "#Intent;scheme=roblox;" +
+            "package=com.roblox.client;" +
+            "S.browser_fallback_url=" +
+            encodeURIComponent(fallback) +
+            ";end";
+
+        location.href = intent;
+
+    } catch (error) {
+        document.body.innerHTML = "Gagal membuka profil Roblox";
+    }
+}
+
+openProfile();
+</script>
+</body>
+</html>
+
